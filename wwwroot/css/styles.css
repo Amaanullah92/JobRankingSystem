@@ -387,8 +387,27 @@ h6,
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    /* ENABLE NATIVE SCROLLING ON MOBILE */
+    body {
+        overflow: auto; /* Allow scroll */
+        height: auto;
+    }
+
     #wrapper {
         flex-direction: column;
+        height: auto; /* Content decides height */
+    }
+
+    #content-wrapper {
+        height: auto;
+        overflow: visible; /* Let body handle scrolling */
+    }
+
+    .main-content {
+        padding: 1rem;
+        /* Extra padding at bottom so last card isn't cut off by browser nav bars */
+        padding-bottom: 80px; 
+        overflow: visible;
     }
 
     .sidebar {
@@ -424,10 +443,6 @@ h6,
     #sidebar-overlay.active {
         display: block;
         opacity: 1;
-    }
-
-    .main-content {
-        padding: 1rem;
     }
 
     /* Adjust cards for mobile */
