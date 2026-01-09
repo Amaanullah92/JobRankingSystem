@@ -405,21 +405,30 @@ h6,
 
     .main-content {
         padding: 1rem;
-        /* Extra padding at bottom so last card isn't cut off by browser nav bars */
         padding-bottom: 80px; 
         overflow: visible;
+        height: auto;
     }
-
+    
+    /* Mobile Sidebar Fix */
     .sidebar {
         position: fixed;
         left: -280px;
         top: 0;
         bottom: 0;
-        height: 100vh;
+        height: 100vh; /* Fallback */
+        height: 100dvh; /* Dynamic Viewport Height */
         margin: 0;
         border-radius: 0;
         z-index: 1050;
         transition: left 0.3s ease-in-out;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Ensure menu scrolls if height is too small, but footer stays visible usually */
+    .sidebar-menu {
+        overflow-y: auto;
     }
 
     .sidebar.active {
