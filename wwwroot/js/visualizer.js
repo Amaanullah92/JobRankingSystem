@@ -1,36 +1,35 @@
-// visualizer.js
-// Helper to render Algorithm Traces into the UI
+const visualizer = {
+    renderTrace: (trace, containerId) => {
+        const container = document.getElementById(containerId);
+        container.innerHTML = ''; // Clear
 
-function renderTrace(trace, containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
+        // Simple linear visualization of the FINAL step state or animation loop
+        // For a true animation, we'd use setInterval. For this MVP, let's show the final array state
+        // and allow user to click steps in the log.
+    },
 
-    if (!trace) {
-        container.innerHTML = "";
-        return;
+    logTrace: (trace, containerId) => {
+        const container = document.getElementById(containerId);
+        container.innerHTML = `<h6>${trace.algorithmName} Trace</h6>`;
+
+        trace.steps.forEach(step => {
+            const div = document.createElement('div');
+            div.className = 'trace-step';
+
+            let vars = '';
+            if (step.variables) {
+                vars = Object.entries(step.variables).map(([k, v]) => `<span class="badge bg-secondary me-1">${k}: ${v}</span>`).join('');
+            }
+
+            div.innerHTML = `
+                <div><strong>Step ${step.stepId}:</strong> ${step.description}</div>
+                <div class="mt-1">${vars}</div>
+            `;
+
+            // Hover to visualize state?
+            // In a full implementation, clicking this would re-render the visualizer box with 'step.stateSnapshot'
+
+            container.appendChild(div);
+        });
     }
-
-    let html = `<h6>${trace.algorithmName} - Execution Trace</h6>`;
-    html += `<div class="trace-log">`;
-    
-    trace.steps.forEach(step => {
-        // Format variables
-        let vars = "";
-        if (step.variables) {
-            vars = " | " + Object.entries(step.variables)
-                .map(([k, v]) => `<span class="text-info">${k}=${v}</span>`)
-                .join(", ");
-        }
-
-        html += `
-            <div class="step-item">
-                <span class="text-warning">[Step ${step.stepId}]</span> 
-                ${step.description} 
-                ${vars}
-            </div>
-        `;
-    });
-
-    html += `</div>`;
-    container.innerHTML = html;
-}
+};
