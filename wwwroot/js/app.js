@@ -7,7 +7,22 @@ const app = {
         trace: null,
         explainMode: false,
         theme: localStorage.getItem('theme') || 'light',
-        notifications: []
+        notifications: [],
+        isSidebarOpen: false
+    },
+
+    toggleSidebar: () => {
+        app.state.isSidebarOpen = !app.state.isSidebarOpen;
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        
+        if (app.state.isSidebarOpen) {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+        } else {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        }
     },
 
     addNotification: (message, type = 'info') => {
@@ -115,6 +130,11 @@ const app = {
     },
 
     showPage: (pageId) => {
+        // Close sidebar on mobile if open
+        if (window.innerWidth <= 768 && app.state.isSidebarOpen) {
+            app.toggleSidebar();
+        }
+
         document.querySelectorAll('.page-section').forEach(el => el.classList.add('d-none'));
         document.getElementById(`${pageId}-page`).classList.remove('d-none');
         document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
