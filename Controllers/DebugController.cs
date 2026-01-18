@@ -67,7 +67,7 @@ namespace JobRankingSystem.Controllers
                 var candidates = await _context.Candidates
                     .Include(c => c.CandidateSkills)
                     .ThenInclude(cs => cs.Skill)
-                    .Take(5) // Just take 5 to be safe
+                    // .Take(5) // REMOVED LIMIT to text full dataset
                     .ToListAsync();
                 
                 return Ok(new { status = "Success", count = candidates.Count, sample = candidates });
