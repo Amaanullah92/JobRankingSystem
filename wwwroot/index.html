@@ -150,10 +150,10 @@
         <!-- Content Wrapper -->
         <div id="content-wrapper">
             <!-- Mobile Header Bar -->
-            <div class="d-md-none bg-white border-bottom p-3 d-flex justify-content-between align-items-center sticky-top shadow-sm">
+            <div class="d-md-none mobile-header border-bottom p-3 d-flex justify-content-between align-items-center sticky-top shadow-sm">
                 
                 <!-- Brand (Duplicate for Mobile) -->
-                <a href="#" class="d-flex align-items-center text-decoration-none text-dark" onclick="app.showPage('dashboard')">
+                <a href="#" class="d-flex align-items-center text-decoration-none mobile-brand" onclick="app.showPage('dashboard')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         class="me-2 text-primary">
@@ -181,12 +181,12 @@
 
                 <!-- Dashboard Page -->
                 <div id="dashboard-page" class="page-section">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                         <div>
                             <h2 class="mb-1">Overview</h2>
                             <p class="text-muted"> A DSA-Based Smart Candidate Ranking & Recommendation System</p>
                         </div>
-                        <button class="btn btn-primary" onclick="app.rankCandidates()">
+                        <button class="btn btn-primary w-100 w-md-auto" onclick="app.rankCandidates()">
                             Run Candidates Ranking
                         </button>
                     </div>
@@ -229,12 +229,14 @@
                             <div class="card">
                                 <div class="card-header">Budget Optimization (Greedy)</div>
                                 <div class="card-body">
-                                    <div class="d-flex gap-2 align-items-center mb-3">
+                                    <div class="d-flex flex-column flex-md-row gap-2 align-items-md-center mb-3">
                                         <label class="text-muted">Total Budget:</label>
-                                        <input type="number" id="budgetInput" class="form-control" style="width: 150px"
-                                            value="200000">
-                                        <button class="btn btn-outline-primary"
-                                            onclick="app.greedyShortlist()">Auto-Shortlist</button>
+                                        <div class="d-flex gap-2 w-100 w-md-auto">
+                                            <input type="number" id="budgetInput" class="form-control" style="width: 150px"
+                                                value="200000">
+                                            <button class="btn btn-outline-primary"
+                                                onclick="app.greedyShortlist()">Auto-Shortlist</button>
+                                        </div>
                                     </div>
                                     <div id="greedy-results" class="row g-2"></div>
                                 </div>
@@ -245,17 +247,17 @@
 
                 <!-- Candidates Page -->
                 <div id="candidates-page" class="page-section d-none">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                         <div>
                             <h2 class="mb-1">Candidates</h2>
                             <p class="text-muted mb-0">View, search, and sort candidates using efficient data structures
                                 and algorithms.</p>
                         </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-outline-secondary"
+                        <div class="d-flex gap-2 w-100 w-md-auto">
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1 flex-md-grow-0"
                                 onclick="app.sortCandidates('MergeSort')">Merge
                                 Sort</button>
-                            <button class="btn btn-sm btn-outline-secondary"
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1 flex-md-grow-0"
                                 onclick="app.sortCandidates('QuickSort')">Quick
                                 Sort</button>
                         </div>
@@ -265,8 +267,8 @@
                         style="background: transparent; box-shadow: none !important; border: none !important;">
                         <!-- Search Bar Container -->
                         <div class="bg-card p-3 rounded shadow-sm border">
-                            <div class="d-flex gap-2 w-100">
-                                <div class="input-group">
+                            <div class="d-flex flex-column flex-md-row gap-2 w-100">
+                                <div class="input-group w-100">
                                     <span class="input-group-text border-end-0">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -281,7 +283,7 @@
                                         title="Uses KMP Algorithm to search Resume Text">
                                     <button class="btn btn-primary" onclick="app.searchCandidates()">Search</button>
                                 </div>
-                                <button class="btn btn-success d-flex align-items-center gap-1 text-nowrap"
+                                <button class="btn btn-success d-flex align-items-center justify-content-center gap-1 text-nowrap w-100 w-md-auto"
                                     data-bs-toggle="modal" data-bs-target="#addCandidateModal">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -294,141 +296,3 @@
                             </div>
                         </div>
                     </div>
-
-                    <div id="candidate-list" class="row g-3">
-                        <!-- Candidate Cards -->
-                    </div>
-                </div>
-
-                <!-- Jobs/Matching Page -->
-                <div id="jobs-page" class="page-section d-none">
-                    <div class="row">
-                        <div class="col-lg-8 mx-auto">
-                            <div class="text-center mb-5">
-                                <h2>Job Matching Engine</h2>
-                                <p class="text-muted">Uses Dynamic Programming (LCS) to calculate fit scores.</p>
-                            </div>
-
-                            <div class="card mb-4">
-                                <div class="card-body">
-                                    <label class="form-label text-uppercase text-muted fs-7 fw-bold">Select Active
-                                        Opening</label>
-                                    <select id="job-select" class="form-select form-select-lg mb-3"
-                                        onchange="app.matchJob()">
-                                        <option value="">Choose a job...</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div id="match-results" class="d-flex flex-column gap-2"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Skills Page -->
-                <div id="skills-page" class="page-section d-none">
-                    <div class="row g-4 mb-4">
-                        <div class="col-lg-6">
-                            <div class="card h-100 border-primary border-opacity-25">
-                                <div class="card-body">
-                                    <h5 class="card-title text-primary fw-bold">
-                                        Graph Data Structure
-                                    </h5>
-                                    <p class="card-text small text-muted">
-                                        Nodes represent Skills and Edges represent co-occurrence. Hover to see clusters.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="card h-100 border-success border-opacity-25">
-                                <div class="card-body">
-                                    <h5 class="card-title text-success fw-bold">
-                                        Trie (Prefix Tree)
-                                    </h5>
-                                    <p class="card-text small text-muted">
-                                        Type below to visualize skill connections.
-                                    </p>
-                                    <div class="position-relative mt-2">
-                                        <input type="text" class="form-control border-success" id="skillInput"
-                                            oninput="app.autocompleteSkill()" placeholder="Type 'Ja', 'Py', 'Re'...">
-                                        <ul id="autocomplete-list"
-                                            class="list-group position-absolute w-100 shadow mt-1"
-                                            style="z-index: 1000;"></ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="graph-container">
-                        <canvas id="skillGraph"></canvas>
-                    </div>
-                    <div class="d-flex justify-content-center mt-2 gap-3 small text-muted">
-                        <span class="d-flex align-items-center gap-1"><span
-                                class="d-inline-block rounded-circle bg-primary"
-                                style="width: 10px; height: 10px;"></span> Skill Node</span>
-                        <span class="d-flex align-items-center gap-1"><span
-                                class="d-inline-block rounded-circle bg-danger"
-                                style="width: 10px; height: 10px;"></span> Hovered</span>
-                        <span class="d-flex align-items-center gap-1"><span class="d-inline-block bg-secondary"
-                                style="width: 20px; height: 1px;"></span> Connection</span>
-                    </div>
-                </div>
-
-            </main>
-        </div>
-    </div>
-
-    <!-- Add Candidate Modal -->
-    <div class="modal fade" id="addCandidateModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add New Candidate</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addCandidateForm">
-                        <div class="mb-3">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="newCandName" required>
-                        </div>
-                        <div class="row g-2">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Experience (Years)</label>
-                                <input type="number" class="form-control" id="newCandExp" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Expected Salary ($)</label>
-                                <input type="number" class="form-control" id="newCandSalary" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Education</label>
-                            <input type="text" class="form-control" id="newCandEducation"
-                                placeholder="e.g. BS Computer Science" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Resume Text / Bio</label>
-                            <textarea class="form-control" id="newCandResume" rows="3"
-                                placeholder="Paste resume text for KMP search..."></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="app.addCandidate()">Save Candidate</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="js/visualizer.js"></script>
-    <script src="js/graph-visualizer.js"></script>
-    <script src="js/app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
-</html>

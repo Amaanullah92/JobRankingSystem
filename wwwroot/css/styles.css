@@ -431,6 +431,16 @@ h6,
         overflow-y: auto;
     }
 
+    .mobile-header {
+        background-color: var(--bg-card) !important;
+        border-color: var(--border-color) !important;
+        color: var(--text-main);
+    }
+
+    .mobile-brand {
+        color: var(--text-main) !important;
+    }
+
     .sidebar.active {
         left: 0;
         box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
