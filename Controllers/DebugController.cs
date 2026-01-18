@@ -9,10 +9,14 @@ namespace JobRankingSystem.Controllers
     public class DebugController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly JobRankingSystem.Services.KMPService _kmpService;
+        private readonly JobRankingSystem.Services.AVLTreeService _avlService;
 
-        public DebugController(AppDbContext context)
+        public DebugController(AppDbContext context, JobRankingSystem.Services.KMPService kmpService, JobRankingSystem.Services.AVLTreeService avlService)
         {
             _context = context;
+            _kmpService = kmpService;
+            _avlService = avlService; // Just injecting to see if it crashes
         }
 
         [HttpGet]
