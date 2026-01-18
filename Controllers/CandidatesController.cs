@@ -23,9 +23,25 @@ namespace JobRankingSystem.Controllers
 
         // GET: api/Candidates
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Candidate>>> GetCandidates()
+        public async Task<IActionResult> GetCandidates()
         {
-            return await _context.Candidates.Include(c => c.CandidateSkills).ThenInclude(cs => cs.Skill).ToListAsync();
+            try
+            {
+                var candidates = await _context.Candidates
+                    .Include(c => c.CandidateSkills)
+                    .ThenInclude(cs => cs.Skill)
+                    .ToListAsync();
+                return Ok(candidates);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    status = "Error", 
+                    message = "Failed to fetch candidates", 
+                    detail = ex.Message, 
+                    inner = ex.InnerException?.Message 
+                });
+            }
         }
 
         // POST: api/Candidates
