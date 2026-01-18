@@ -54,5 +54,27 @@ namespace JobRankingSystem.Controllers
                 });
             }
         }
+
+        [HttpGet("test-query")]
+        public async Task<IActionResult> TestQuery()
+        {
+            try {
+                // Mimic the exact query from CandidatesController
+                var candidates = await _context.Candidates
+                    .Include(c => c.CandidateSkills)
+                    .ThenInclude(cs => cs.Skill)
+                    .Take(5) // Just take 5 to be safe
+                    .ToListAsync();
+                
+                return Ok(new { status = "Success", count = candidates.Count, sample = candidates });
+            } catch (Exception ex) {
+                 return StatusCode(500, new { 
+                    status = "Query Error", 
+                    message = ex.Message, 
+                    innerException = ex.InnerException?.Message ?? "None", 
+                    stackTrace = ex.StackTrace 
+                });
+            }
+        }
     }
 }
