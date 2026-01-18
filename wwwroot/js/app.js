@@ -15,7 +15,7 @@ const app = {
         app.state.isSidebarOpen = !app.state.isSidebarOpen;
         const sidebar = document.querySelector('.sidebar');
         const overlay = document.getElementById('sidebar-overlay');
-        
+
         if (app.state.isSidebarOpen) {
             sidebar.classList.add('active');
             overlay.classList.add('active');
@@ -89,26 +89,43 @@ const app = {
     },
 
     init: () => {
-        // Theme Setup
-        document.documentElement.setAttribute('data-theme', app.state.theme);
-        app.updateThemeIcon();
+        console.log("App initializing...");
+        try {
+            // Theme Setup
+            if (app.state.theme) {
+                document.documentElement.setAttribute('data-theme', app.state.theme);
+                app.updateThemeIcon();
+            }
 
-        document.getElementById('themeToggle').addEventListener('click', app.toggleTheme);
+            const themeBtn = document.getElementById('themeToggle');
+            if (themeBtn) themeBtn.addEventListener('click', app.toggleTheme);
 
-        document.getElementById('explainModeToggle').addEventListener('change', (e) => {
-            app.state.explainMode = e.target.checked;
-            const logEl = document.getElementById('live-trace-log');
-            logEl.innerHTML = app.state.explainMode
-                ? '<div class="text-success">Explain Mode Enabled. Logs will appear here.</div>'
-                : '<div class="text-muted">Enable Explain Mode to see live execution...</div>';
-        });
+            const explainToggle = document.getElementById('explainModeToggle');
+            if (explainToggle) {
+                explainToggle.addEventListener('change', (e) => {
+                    app.state.explainMode = e.target.checked;
+                    const logEl = document.getElementById('live-trace-log');
+                    if (logEl) {
+                        logEl.innerHTML = app.state.explainMode
+                            ? '<div class="text-success">Explain Mode Enabled. Logs will appear here.</div>'
+                            : '<div class="text-muted">Enable Explain Mode to see live execution...</div>';
+                    }
+                });
+            }
 
-        // Load initial data
-        app.loadCandidates();
-        app.loadJobs();
+            // Load initial data
+            app.loadCandidates();
+            app.loadJobs();
 
-        // Init Graph Visualizer
-        app.graphViz = new GraphVisualizer('skillGraph');
+            // Init Graph Visualizer
+            if (typeof GraphVisualizer !== 'undefined') {
+                app.graphViz = new GraphVisualizer('skillGraph');
+            } else {
+                console.warn('GraphVisualizer class not found. Skill graph will not load.');
+            }
+        } catch (err) {
+            console.error("Critical Error during App Init:", err);
+        }
     },
 
     toggleTheme: () => {
@@ -117,13 +134,14 @@ const app = {
         localStorage.setItem('theme', app.state.theme);
         app.updateThemeIcon();
         // Redraw graph if visible because colors change
-        if (!document.getElementById('skills-page').classList.contains('d-none')) {
+        if (typeof app.graphViz !== 'undefined' && !document.getElementById('skills-page').classList.contains('d-none')) {
             app.graphViz.draw();
         }
     },
 
     updateThemeIcon: () => {
         const btn = document.getElementById('themeToggle');
+        if (!btn) return;
         btn.innerHTML = app.state.theme === 'light'
             ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>'
             : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
@@ -136,7 +154,8 @@ const app = {
         }
 
         document.querySelectorAll('.page-section').forEach(el => el.classList.add('d-none'));
-        document.getElementById(`${pageId}-page`).classList.remove('d-none');
+        const page = document.getElementById(`${pageId}-page`);
+        if (page) page.classList.remove('d-none');
         document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
 
         // Highlight active sidebar link
@@ -154,7 +173,7 @@ const app = {
         const titleEl = document.getElementById('page-title');
         if (titleEl && titleMap[pageId]) titleEl.innerText = titleMap[pageId];
 
-        if (pageId === 'skills') {
+        if (pageId === 'skills' && typeof app.graphViz !== 'undefined') {
             app.loadGraph();
             setTimeout(() => app.graphViz.resize(), 100); // Ensure size correct after display
         }
@@ -162,23 +181,33 @@ const app = {
 
     loadCandidates: async () => {
         try {
+            console.log("Loading candidates...");
             const res = await fetch(`${API_URL}/Candidates`);
             if (!res.ok) throw new Error('Failed to fetch');
             app.state.candidates = await res.json();
             app.renderCandidates(app.state.candidates);
         } catch (e) {
-            console.error(e);
+            console.error("Error loading candidates:", e);
+            const container = document.getElementById('candidate-list');
+            if (container) container.innerHTML = '<div class="col-12 text-center text-danger">Failed to load candidates. API might be down.</div>';
         }
     },
 
     loadJobs: async () => {
-        const res = await fetch(`${API_URL}/Jobs`);
-        app.state.jobs = await res.json();
-        const select = document.getElementById('job-select');
-        select.innerHTML = '<option value="">Select a Job to Match...</option>';
-        app.state.jobs.forEach(j => {
-            select.innerHTML += `<option value="${j.id}">${j.jobTitle}</option>`;
-        });
+        try {
+            const res = await fetch(`${API_URL}/Jobs`);
+            if (!res.ok) throw new Error('Failed to fetch Jobs');
+            app.state.jobs = await res.json();
+            const select = document.getElementById('job-select');
+            if (select) {
+                select.innerHTML = '<option value="">Select a Job to Match...</option>';
+                app.state.jobs.forEach(j => {
+                    select.innerHTML += `<option value="${j.id}">${j.jobTitle}</option>`;
+                });
+            }
+        } catch (e) {
+            console.warn("Error loading jobs:", e);
+        }
     },
 
     renderCandidates: (list) => {
@@ -249,58 +278,16 @@ const app = {
     rankCandidates: async () => {
         const res = await fetch(`${API_URL}/Ranking/rank`);
         const data = await res.json();
-
         const list = document.getElementById('top-candidates-list');
-        list.innerHTML = data.candidates.map((c, i) => `
+        list.innerHTML = data.rankedNames.map((name, i) => `
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="fw-bold me-2">#${i + 1}</span>
-                    ${c.fullName}
-                </div>
-                <span class="badge bg-primary rounded-pill">${c.experienceYears} Yrs</span>
+                <span>${i + 1}. ${name}</span>
+                <span class="badge bg-primary rounded-pill">Rank ${i + 1}</span>
             </li>
         `).join('');
 
-        if (app.state.explainMode && data.trace) {
-            visualizer.logTrace(data.trace, 'live-trace-log');
-        }
-    },
-
-    searchCandidates: async () => {
-        const keyword = document.getElementById('candidateSearch').value;
-        if (!keyword) {
-            app.loadCandidates();
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API_URL}/Candidates/search?keyword=${encodeURIComponent(keyword)}`);
-            const data = await res.json();
-
-            // Handle lowercase or PascalCase
-            const list = data.candidates || data.Candidates || [];
-            const traces = data.traces || data.Traces || [];
-
-            app.renderCandidates(list);
-
-            if (app.state.explainMode && traces.length > 0) {
-                // Find the first trace that has a 'found' step for better UX, otherwise first one
-                const foundTrace = traces.find(t => t.steps.some(s => s.description.includes('Pattern found'))) || traces[0];
-                visualizer.logTrace(foundTrace, 'live-trace-log');
-            }
-        } catch (e) {
-            console.error("Search failed", e);
-            document.getElementById('candidate-list').innerHTML = '<div class="text-danger text-center">Search failed. See console.</div>';
-        }
-    },
-
-    sortCandidates: async (algo) => {
-        const res = await fetch(`${API_URL}/Ranking/sort?algorithm=${algo}`);
-        const data = await res.json();
-        app.renderCandidates(data.candidates);
-
-        if (app.state.explainMode && data.trace) {
-            visualizer.logTrace(data.trace, 'live-trace-log');
+        if (app.state.explainMode && data.traceLog) {
+            visualizer.logTrace(data.traceLog, 'live-trace-log');
         }
     },
 
@@ -308,45 +295,47 @@ const app = {
         const budget = document.getElementById('budgetInput').value;
         const res = await fetch(`${API_URL}/Ranking/shortlist?budget=${budget}`);
         const data = await res.json();
-
+        
         const container = document.getElementById('greedy-results');
-        if (data.candidates.length === 0) {
-            container.innerHTML = '<div class="col-12 text-muted small">No candidates selected.</div>';
-        } else {
-            container.innerHTML = data.candidates.map(c => `
-                <div class="col-6 col-md-4">
-                    <div class="p-2 bg-success bg-opacity-10 border border-success rounded small">
-                        <strong>${c.fullName}</strong>
-                        <div class="text-muted">$${c.expectedSalary.toLocaleString()}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        if (app.state.explainMode && data.trace) {
-            visualizer.logTrace(data.trace, 'live-trace-log');
-        }
-    },
-
-    matchJob: async () => {
-        const jobId = document.getElementById('job-select').value;
-        if (!jobId) {
-            document.getElementById('match-results').innerHTML = '';
+        if (data.results.length === 0) {
+            container.innerHTML = '<div class="col-12 text-muted small">No candidates fit within this budget.</div>';
             return;
         }
 
-        const res = await fetch(`${API_URL}/Jobs/${jobId}/match`);
-        const results = await res.json();
-
-        const container = document.getElementById('match-results');
-        container.innerHTML = results.map(r => `
-            <div class="alert ${r.score >= 70 ? 'alert-success' : 'alert-light border'} d-flex justify-content-between align-items-center">
-                 <span>
-                    <strong>${r.candidate}</strong>
-                 </span>
-                 <span class="fw-bold">${r.score.toFixed(1)}% Match</span>
+        container.innerHTML = data.results.map(c => `
+            <div class="col-auto">
+                <span class="badge bg-success p-2">${c.fullName} ($${c.expectedSalary})</span>
             </div>
         `).join('');
+
+        if (app.state.explainMode && data.traceLog) {
+            visualizer.logTrace(data.traceLog, 'live-trace-log');
+        }
+    },
+
+    sortCandidates: async (algo) => {
+        const res = await fetch(`${API_URL}/Ranking/sort?algorithm=${algo}`);
+        const data = await res.json();
+        app.renderCandidates(data.sortedCandidates);
+
+        if (app.state.explainMode && data.traceLog) {
+            visualizer.logTrace(data.traceLog, 'live-trace-log');
+        }
+    },
+
+    searchCandidates: async () => {
+        const query = document.getElementById('candidateSearch').value;
+        if (!query) {
+            app.loadCandidates();
+            return;
+        }
+
+        const res = await fetch(`${API_URL}/Ranking/search?keyword=${query}`);
+        const results = await res.json(); // Returns List<CandidateMatch>
+        
+        // Extract candidate objects from match results
+        const candidates = results.map(r => r.candidate);
+        app.renderCandidates(candidates);
 
         if (app.state.explainMode && results.length > 0 && results[0].trace) {
             // Visualize the first match calculation
