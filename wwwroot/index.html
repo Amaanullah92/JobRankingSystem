@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillMesh</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Fonts: Poppins (Headings) & Work Sans (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Work+Sans:wght@400;500&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css?v=3">
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="#" class="sidebar-brand">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="me-2 text-primary">
+                    <!-- Using primary color for icon to pop against dark background if needed, or just white -->
+                    <!-- Actually, sidebar text is slate-400, active is white. Let's make icon accent -->
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path
+                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1-4-10z">
+                    </path>
+                    <path d="M2 12h20"></path>
+                </svg>
+                <span class="text-white">SkillMesh</span>
+            </a>
+
+            <ul class="sidebar-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" onclick="app.showPage('dashboard')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="app.showPage('candidates')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        Candidates
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="app.showPage('jobs')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                        Job Matching
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="app.showPage('skills')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                        Skill Network
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="d-flex flex-column gap-3">
+                    <div class="form-check form-switch cursor-pointer">
+                        <input class="form-check-input" type="checkbox" id="explainModeToggle">
+                        <label class="form-check-label small" for="explainModeToggle">Explain Algo</label>
+                    </div>
+
+                    <button id="themeToggle"
+                        class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2">
+                        <span>Theme</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </button>
+
+                    <div class="dropdown w-100 dropup">
+                        <button
+                            class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 position-relative"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            <span>Notifications</span>
+                            <span id="notification-badge"
+                                class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none">
+                                <span class="visually-hidden">New alerts</span>
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu shadow border-0"
+                            style="width: 260px; max-height: 400px; overflow-y: auto;" id="notification-list">
+                            <li>
+                                <h6 class="dropdown-header text-uppercase small fw-bold">Recent Activity</h6>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li class="px-3 py-2 text-muted small text-center">No new notifications</li>
+                        </ul>
+                    </div>
+
+
+
+                    <!-- Auth Buttons -->
+                    <div id="auth-section">
+                        <button
+                            class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2 mb-2"
+                            data-bs-toggle="modal" data-bs-target="#loginModal" id="loginBtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                <polyline points="10 17 15 12 10 7"></polyline>
+                                <line x1="15" y1="12" x2="3" y2="12"></line>
+                            </svg>
+                            <span>Login</span>
+                        </button>
+                        <button
+                            class="btn btn-danger w-100 d-flex align-items-center justify-content-center gap-2 mb-2 d-none"
+                            onclick="app.logout()" id="logoutBtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            <span>Logout</span>
+                        </button>
+                        <div id="user-display" class="small text-center text-muted d-none"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Overlay -->
+        <div id="sidebar-overlay" onclick="app.toggleSidebar()"></div>
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper">
+            <!-- Mobile Header Bar -->
+            <div
+                class="d-md-none mobile-header border-bottom p-3 d-flex justify-content-between align-items-center sticky-top shadow-sm">
+
+                <!-- Brand (Duplicate for Mobile) -->
+                <a href="#" class="d-flex align-items-center text-decoration-none mobile-brand"
+                    onclick="app.showPage('dashboard')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="me-2 text-primary">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path
+                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1-4-10z">
+                        </path>
+                        <path d="M2 12h20"></path>
+                    </svg>
+                    <span class="fw-bold fs-5">SkillMesh</span>
+                </a>
+
+                <!-- Toggle Button -->
+                <button class="btn btn-primary btn-sm" onclick="app.toggleSidebar()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+
+            <!-- Main Scrollable Content -->
+            <main class="main-content custom-scrollbar">
+
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page-section">
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+                        <div>
+                            <h2 class="mb-1">Overview</h2>
+                            <p class="text-muted"> A DSA-Based Smart Candidate Ranking & Recommendation System</p>
+                        </div>
+                        <button class="btn btn-primary w-100 w-md-auto" onclick="app.rankCandidates()">
+                            Run Candidates Ranking
+                        </button>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Top Candidates -->
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <span>Top Candidates</span>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary">Max Heap</span>
+                                </div>
+                                <div class="card-body p-0">
+                                    <ul id="top-candidates-list" class="list-group list-group-flush">
+                                        <li class="list-group-item text-muted text-center py-5">Run ranking to see
+                                            results</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trace Log -->
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <span>Algorithm Trace</span>
+                                    <span class="badge bg-warning bg-opacity-10 text-warning">Live Log</span>
+                                </div>
+                                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                                    <div id="live-trace-log" class="trace-log small">
+                                        Steps will appear here when Explain Mode is ON.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">Budget Optimization (Greedy)</div>
+                                <div class="card-body">
+                                    <div class="d-flex gap-2 align-items-center mb-3">
+                                        <label class="text-muted">Total Budget:</label>
+                                        <input type="number" id="budgetInput" class="form-control" style="width: 150px"
+                                            value="200000">
+                                        <button class="btn btn-outline-primary"
+                                            onclick="app.greedyShortlist()">Auto-Shortlist</button>
+                                    </div>
+                                    <div id="greedy-results" class="row g-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Candidates Page -->
+                <div id="candidates-page" class="page-section d-none">
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+                        <div>
+                            <h2 class="mb-1">Candidates</h2>
+                            <p class="text-muted mb-0">View, search, and sort candidates using efficient data structures
+                                and algorithms.</p>
+                        </div>
+                        <div class="d-flex gap-2 w-100 w-md-auto">
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1 flex-md-grow-0"
+                                onclick="app.sortCandidates('MergeSort')">Merge
+                                Sort</button>
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1 flex-md-grow-0"
+                                onclick="app.sortCandidates('QuickSort')">Quick
+                                Sort</button>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4 border-0 shadow-sm"
+                        style="background: transparent; box-shadow: none !important; border: none !important;">
+                        <!-- Search Bar Container -->
+                        <div class="bg-card p-3 rounded shadow-sm border">
+                            <div class="d-flex flex-column flex-md-row gap-2 w-100">
+                                <div class="input-group w-100">
+                                    <span class="input-group-text border-end-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="11" cy="11" r="8" />
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                        </svg>
+                                    </span>
+                                    <input type="text" class="form-control border-start-0 ps-0" id="candidateSearch"
+                                        placeholder="Search keywords in candidate resumes (e.g. 'Java', 'Machine Learning')..."
+                                        onkeydown="if(event.key==='Enter') app.searchCandidates()"
+                                        title="Uses KMP Algorithm to search Resume Text">
+                                    <button class="btn btn-primary" onclick="app.searchCandidates()">Search</button>
+                                </div>
+                                <button
+                                    class="btn btn-success d-flex align-items-center justify-content-center gap-1 text-nowrap w-100 w-md-auto"
+                                    data-bs-toggle="modal" data-bs-target="#addCandidateModal">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                    Add New
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="candidate-list" class="row g-3">
+                        <!-- Candidate Cards -->
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <button class="btn btn-outline-secondary" id="prevPageBtn" onclick="app.changePage(-1)"
+                            disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                            Previous
+                        </button>
+                        <span class="text-muted fw-bold" id="pageIndicator">Page 1</span>
+                        <button class="btn btn-outline-secondary" id="nextPageBtn" onclick="app.changePage(1)">
+                            Next
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Jobs/Matching Page -->
+                <div id="jobs-page" class="page-section d-none">
+                    <div class="row">
+                        <div class="col-lg-8 mx-auto">
+                            <div class="text-center mb-5">
+                                <h2>Job Matching Engine</h2>
+                                <p class="text-muted">Uses Dynamic Programming (LCS) to calculate fit scores.</p>
+                            </div>
+
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <label class="form-label text-uppercase text-muted fs-7 fw-bold">Select Active
+                                        Opening</label>
+                                    <select id="job-select" class="form-select form-select-lg mb-3"
+                                        onchange="app.matchJob()">
+                                        <option value="">Choose a job...</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="match-results" class="d-flex flex-column gap-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills Page -->
+                <div id="skills-page" class="page-section d-none">
+                    <div class="row g-4 mb-4">
+                        <div class="col-lg-6">
+                            <div class="card h-100 border-primary border-opacity-25">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary fw-bold">
+                                        Graph Data Structure
+                                    </h5>
+                                    <p class="card-text small text-muted">
+                                        Nodes represent Skills and Edges represent co-occurrence. Hover to see clusters.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card h-100 border-success border-opacity-25">
+                                <div class="card-body">
+                                    <h5 class="card-title text-success fw-bold">
+                                        Trie (Prefix Tree)
+                                    </h5>
+                                    <p class="card-text small text-muted">
+                                        Type below to visualize skill connections.
+                                    </p>
+                                    <div class="position-relative mt-2">
+                                        <input type="text" class="form-control border-success" id="skillInput"
+                                            oninput="app.autocompleteSkill()" placeholder="Type 'Ja', 'Py', 'Re'...">
+                                        <ul id="autocomplete-list"
+                                            class="list-group position-absolute w-100 shadow mt-1"
+                                            style="z-index: 1000;"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="graph-container">
+                        <canvas id="skillGraph"></canvas>
+                    </div>
+                    <div class="d-flex justify-content-center mt-2 gap-3 small text-muted">
+                        <span class="d-flex align-items-center gap-1"><span
+                                class="d-inline-block rounded-circle bg-primary"
+                                style="width: 10px; height: 10px;"></span> Skill Node</span>
+                        <span class="d-flex align-items-center gap-1"><span
+                                class="d-inline-block rounded-circle bg-danger"
+                                style="width: 10px; height: 10px;"></span> Hovered</span>
+                        <span class="d-flex align-items-center gap-1"><span class="d-inline-block bg-secondary"
+                                style="width: 20px; height: 1px;"></span> Connection</span>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs mb-3" id="loginTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="admin-tab" data-bs-toggle="tab"
+                                data-bs-target="#admin-login-pane" type="button" role="tab">Admin Login</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="guest-tab" data-bs-toggle="tab"
+                                data-bs-target="#guest-login-pane" type="button" role="tab">Guest Login</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="myTabContent">
+                        <!-- Admin Login Pane -->
+                        <div class="tab-pane fade show active" id="admin-login-pane" role="tabpanel">
+                            <form id="loginForm" onsubmit="event.preventDefault(); app.login();">
+                                <div class="mb-3">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="loginUser" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="loginPass" required>
+                                </div>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary w-100">Login as Admin</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Guest Login Pane -->
+                        <div class="tab-pane fade" id="guest-login-pane" role="tabpanel">
+                            <div class="alert alert-info small">
+                                Guest access allows you to view candidates and run simulations but you cannot add or
+                                edit data.
+                            </div>
+                            <form id="guestLoginForm" onsubmit="event.preventDefault(); app.guestLogin();">
+                                <div class="mb-3">
+                                    <label class="form-label">Username (Display Name)</label>
+                                    <input type="text" class="form-control" id="guestUser" required
+                                        placeholder="e.g. RecruiterJohn">
+                                </div>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-success w-100">Login as Guest</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-3 pt-3 border-top">
+                        <span class="small text-muted">Don't have an account?
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Register Admin
+                                Account</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Register</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="regFullName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" id="regUser" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="regEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" id="regPass" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="app.register()">Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Candidate Modal -->
+    <div class="modal fade" id="addCandidateModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Candidate</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCandidateForm">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="newCandName" required>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Experience (Years)</label>
+                                <input type="number" class="form-control" id="newCandExp" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Expected Salary ($)</label>
+                                <input type="number" class="form-control" id="newCandSalary" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Education</label>
+                            <input type="text" class="form-control" id="newCandEducation"
+                                placeholder="e.g. BS Computer Science" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Resume Text / Bio</label>
+                            <textarea class="form-control" id="newCandResume" rows="3"
+                                placeholder="Paste resume text for KMP search..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="app.addCandidate()">Save Candidate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/visualizer.js?v=3"></script>
+    <script src="js/graph-visualizer.js?v=3"></script>
+    <script src="js/app.js?v=3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

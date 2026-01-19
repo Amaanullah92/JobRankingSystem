@@ -1,0 +1,17 @@
+bin/
+obj/
+.vs/
+.vscode/
+*.log
+*.txt
+*.db
+*.db-shm
+*.db-wal
+build_output/
+TestResults/
+*.user
+appsettings.Development.json
+# Keep DEPLOYMENT.md and README.md usually, but I'll make sure not to ignore .md
+!DEPLOYMENT.md
+!README.md
+!*.md
