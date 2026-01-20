@@ -63,6 +63,7 @@ namespace JobRankingSystem.Controllers
 
         // POST: api/Candidates
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Candidate>> PostCandidate([FromBody] Candidate candidate)
         {
             if (!ModelState.IsValid)
@@ -123,6 +124,7 @@ namespace JobRankingSystem.Controllers
 
         // DELETE: api/Candidates/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCandidate(int id)
         {
             if (!await _candidateRepository.CandidateExistsAsync(id))
@@ -143,6 +145,7 @@ namespace JobRankingSystem.Controllers
 
         // PUT: api/Candidates/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutCandidate(int id, Candidate candidate)
         {
             if (id != candidate.Id)
@@ -152,22 +155,28 @@ namespace JobRankingSystem.Controllers
 
             try
             {
+                // Update skills if resume is provided
+                if (!string.IsNullOrEmpty(candidate.ResumeText))
+                {
+                    await ExtractSkillsFromResume(candidate);
+                }
+                
                 await _candidateRepository.UpdateCandidateAsync(candidate);
+                return NoContent();
             }
             catch (Exception ex)
             {
                 if (!await _candidateRepository.CandidateExistsAsync(id))
                 {
-                    return NotFound();
+                     return NotFound();
                 }
-                else
+                else 
                 {
-                    throw;
+                     throw;
                 }
             }
-
-            return NoContent();
         }
+
 
         // GET: api/Candidates/search?keyword=Java
         [HttpGet("search")]

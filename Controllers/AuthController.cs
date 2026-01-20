@@ -21,51 +21,43 @@ namespace JobRankingSystem.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model)
-        {
-            var user = new ApplicationUser { UserName = model.Username, Email = model.Email, FullName = model.FullName };
-            var result = await _userManager.CreateAsync(user, model.Password);
 
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(user, "User");
-                return Ok(new { Message = "User registered successfully" });
-            }
-
-            return BadRequest(result.Errors);
-        }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             var user = await _userManager.FindByNameAsync(model.Username);
-            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+            if (user == null)
             {
-                var userRoles = await _userManager.GetRolesAsync(user);
-
-                var authClaims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                };
-
-                foreach (var role in userRoles)
-                {
-                    authClaims.Add(new Claim(ClaimTypes.Role, role));
-                }
-
-                var token = GetToken(authClaims);
-
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = token.ValidTo,
-                    username = user.UserName,
-                    roles = userRoles
-                });
+                return Unauthorized(new { message = "User not found" });
             }
-            return Unauthorized();
+            if (!await _userManager.CheckPasswordAsync(user, model.Password))
+            {
+                return Unauthorized(new { message = "Invalid password" });
+            }
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var authClaims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+
+            foreach (var role in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            var token = GetToken(authClaims);
+
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                expiration = token.ValidTo,
+                username = user.UserName,
+                roles = userRoles
+            });
         }
 
         [HttpPost("login/guest")]

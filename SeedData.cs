@@ -7,7 +7,7 @@ namespace JobRankingSystem
 {
     public static class SeedData
     {
-        public static void Initialize(IServiceProvider serviceProvider)
+        public static async Task Initialize(IServiceProvider serviceProvider)
         {
             using (var context = new AppDbContext(
                 serviceProvider.GetRequiredService<DbContextOptions<AppDbContext>>()))
@@ -95,6 +95,11 @@ namespace JobRankingSystem
                 // Look for any candidates.
                 if (context.Candidates.Any())
                 {
+                    // Even if candidates exist, we must ensure Roles and Admin user exist
+                    var rManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                    var uManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                    await EnsureRoles(rManager);
+                    await EnsureAdminUser(uManager);
                     return;   // Candidates already seeded, skipping demo data
                 }
 
@@ -142,8 +147,8 @@ namespace JobRankingSystem
                 var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                 var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-                EnsureRoles(roleManager).Wait();
-                EnsureAdminUser(userManager).Wait();
+                await EnsureRoles(roleManager);
+                await EnsureAdminUser(userManager);
             }
         }
 
@@ -161,6 +166,7 @@ namespace JobRankingSystem
 
         private static async Task EnsureAdminUser(UserManager<ApplicationUser> userManager)
         {
+            Console.WriteLine("SeedData: Checking for Admin user...");
             var adminUser = await userManager.FindByNameAsync("admin");
             if (adminUser == null)
             {
@@ -169,6 +175,11 @@ namespace JobRankingSystem
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");
+                    Console.WriteLine("SeedData: Admin user created successfully.");
+                }
+                else
+                {
+                    Console.WriteLine($"SeedData: Failed to create Admin user. Errors: {string.Join(", ", result.Errors.Select(e => e.Description))}");
                 }
             }
             else

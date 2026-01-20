@@ -76,8 +76,8 @@ using (var scope = app.Services.CreateScope())
         // In the catch block I already log error. So it shouldn't crash the APP, it just fails to seed.
         
         // context.Database.EnsureCreated(); 
-        context.Database.Migrate(); 
-        JobRankingSystem.SeedData.Initialize(services);
+        await context.Database.MigrateAsync(); 
+        await JobRankingSystem.SeedData.Initialize(services);
     }
     catch (Exception ex)
     {

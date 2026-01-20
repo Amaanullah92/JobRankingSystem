@@ -15,6 +15,14 @@ const app = {
         pageSize: 5
     },
 
+    // Helper Methods
+    togglePassword: (id) => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.type = input.type === "password" ? "text" : "password";
+        }
+    },
+
     // Auth Methods
     login: async () => {
         const username = document.getElementById('loginUser').value;
@@ -31,7 +39,12 @@ const app = {
                 const data = await res.json();
                 app.handleLoginSuccess(data);
             } else {
-                alert('Login failed. Check credentials.');
+                try {
+                    const err = await res.json();
+                    alert('Login failed: ' + (err.message || 'Check credentials'));
+                } catch {
+                    alert('Login failed. Check credentials.');
+                }
             }
         } catch (e) {
             console.error(e);
@@ -86,34 +99,8 @@ const app = {
         app.loadCandidates(); // Reload to refresh buttons if needed
     },
 
-    register: async () => {
-        const fullName = document.getElementById('regFullName').value;
-        const username = document.getElementById('regUser').value;
-        const email = document.getElementById('regEmail').value;
-        const password = document.getElementById('regPass').value;
 
-        try {
-            const res = await fetch(`${API_URL}/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fullName, username, email, password })
-            });
 
-            if (res.ok) {
-                alert('Registration successful! Please login.');
-                const regModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
-                regModal.hide();
-                const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-                loginModal.show();
-            } else {
-                const err = await res.json();
-                alert('Registration failed: ' + JSON.stringify(err));
-            }
-        } catch (e) {
-            console.error(e);
-            alert('Registration error.');
-        }
-    },
 
     logout: () => {
         app.state.token = null;
@@ -131,15 +118,32 @@ const app = {
         const userDisplay = document.getElementById('user-display');
         const addCandBtn = document.querySelector('[data-bs-target="#addCandidateModal"]');
 
-        // Hide login/logout - not needed
-        if (loginBtn) loginBtn.classList.add('d-none');
-        if (logoutBtn) logoutBtn.classList.add('d-none');
-        if (userDisplay) userDisplay.classList.add('d-none');
+        if (app.state.token) {
+            if (loginBtn) loginBtn.classList.add('d-none');
+            if (logoutBtn) logoutBtn.classList.remove('d-none');
+            if (userDisplay) {
+                userDisplay.classList.remove('d-none');
+                userDisplay.innerText = `Hi, ${app.state.user.username}`;
+                if (app.state.user.roles.includes("Admin")) {
+                    userDisplay.innerText += " (Admin)";
+                }
+            }
 
-        // Always show Add Candidate button
-        if (addCandBtn) {
-            addCandBtn.classList.remove('d-none');
-            addCandBtn.disabled = false;
+            // Only Admin can add candidates
+            if (addCandBtn) {
+                if (app.state.user.roles && app.state.user.roles.includes("Admin")) {
+                    addCandBtn.classList.remove('d-none');
+                } else {
+                    addCandBtn.classList.add('d-none');
+                }
+                addCandBtn.disabled = false;
+            }
+        } else {
+            if (loginBtn) loginBtn.classList.remove('d-none');
+            if (logoutBtn) logoutBtn.classList.add('d-none');
+            if (userDisplay) userDisplay.classList.add('d-none');
+            // Hide Add Button if not logged in
+            if (addCandBtn) addCandBtn.classList.add('d-none');
         }
     },
 
@@ -381,8 +385,17 @@ const app = {
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                              <h5 class="card-title text-primary fw-bold mb-0">${c.fullName}</h5>
-                             <span class="badge bg-secondary bg-opacity-10 text-secondary">${c.experienceYears} Years</span>
+                             ${(app.state.user && app.state.user.roles && app.state.user.roles.includes("Admin")) ? `
+                             <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary" onclick="app.editCandidate(${c.id})">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="app.deleteCandidate(${c.id})">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                </button>
+                             </div>` : ''}
                         </div>
+                        <span class="badge bg-secondary bg-opacity-10 text-secondary mb-2">${c.experienceYears} Years Experience</span>
                         <p class="card-text small text-muted mb-2">${c.education}</p>
                         <p class="card-text fw-semibold">$${c.expectedSalary.toLocaleString()}</p>
                         <div class="d-flex gap-1 flex-wrap mt-3">
@@ -392,6 +405,79 @@ const app = {
                 </div>
             </div>
         `).join('');
+    },
+
+    editCandidate: (id) => {
+        const candidate = app.state.candidates.find(c => c.id === id);
+        if (!candidate) return;
+
+        document.getElementById('editCandId').value = candidate.id;
+        document.getElementById('editCandName').value = candidate.fullName;
+        document.getElementById('editCandExp').value = candidate.experienceYears;
+        document.getElementById('editCandSalary').value = candidate.expectedSalary;
+        document.getElementById('editCandEducation').value = candidate.education;
+        document.getElementById('editCandResume').value = candidate.resumeText || '';
+
+        new bootstrap.Modal(document.getElementById('editCandidateModal')).show();
+    },
+
+    updateCandidate: async () => {
+        const id = document.getElementById('editCandId').value;
+        const candidate = {
+            id: parseInt(id),
+            fullName: document.getElementById('editCandName').value,
+            experienceYears: parseInt(document.getElementById('editCandExp').value),
+            expectedSalary: parseFloat(document.getElementById('editCandSalary').value),
+            education: document.getElementById('editCandEducation').value,
+            resumeText: document.getElementById('editCandResume').value
+            // Backend will handle skills update if resume text changes
+        };
+
+        try {
+            const res = await fetch(`${API_URL}/Candidates/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${app.state.token}`
+                },
+                body: JSON.stringify(candidate)
+            });
+
+            if (res.ok) {
+                app.addNotification('Candidate updated!', 'success');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editCandidateModal'));
+                if (modal) modal.hide();
+                app.loadCandidates();
+            } else {
+                throw new Error('Failed to update');
+            }
+        } catch (e) {
+            console.error(e);
+            app.addNotification('Error updating candidate', 'danger');
+        }
+    },
+
+    deleteCandidate: async (id) => {
+        if (!confirm('Are you sure you want to delete this candidate?')) return;
+
+        try {
+            const res = await fetch(`${API_URL}/Candidates/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${app.state.token}`
+                }
+            });
+
+            if (res.ok) {
+                app.addNotification('Candidate deleted!', 'success');
+                app.loadCandidates();
+            } else {
+                throw new Error('Failed to delete');
+            }
+        } catch (e) {
+            console.error(e);
+            app.addNotification('Error deleting candidate', 'danger');
+        }
     },
 
     addCandidate: async () => {
@@ -408,7 +494,8 @@ const app = {
             const res = await fetch(`${API_URL}/Candidates`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${app.state.token}`
                 },
                 body: JSON.stringify(candidate)
             });
