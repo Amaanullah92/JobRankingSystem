@@ -25,7 +25,7 @@ This application solves key hiring challenges using optimized algorithms:
 ## 🛠 Tech Stack
 
 - **Backend**: .NET 10.0 (C#), ASP.NET Core Web API
-- **Database**: PostgreSQL (Entity Framework Core)
+- **Database**: PostgreSQL (Managed on **Neon Cloud**) with Entity Framework Core
 - **Frontend**: HTML5, CSS3, JavaScript, Bootstrap 5
 - **Visualization**: HTML5 Canvas (for Graph), Custom Trace Visualizer
 - **Containerization**: Docker
