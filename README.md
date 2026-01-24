@@ -1,8 +1,11 @@
 # Job Ranking System (DSA Project)
 
-A high-performance **Job Ranking & Candidate Matching System** built with **.NET 10.0** and **PostgreSQL**. This project demonstrates the practical application of advanced **Data Structures and Algorithms (DSA)** in a real-world recruitment scenario.
+A high-performance **Job Ranking & Candidate Matching System** built with **.NET 10.0** and **PostgreSQL**.
 
-![Job Ranker Dashboard](https://via.placeholder.com/800x400?text=Job+Ranking+System+Dashboard)
+🌐 **Live Demo:** [https://jobrankingsystem.onrender.com/](https://jobrankingsystem.onrender.com/)
+
+## 🎯 Purpose & Real-World Impact
+Manual resume screening is the biggest bottleneck in modern recruitment. This project demonstrates how **Data Structures and Algorithms (DSA)** can automate this process with mathematical precision. By moving beyond simple keyword filters to computational matching, this system helps **Recruiters** and **Hiring Managers** short-list the best talent objectively and efficiently.
 
 ## 🚀 Features & Algorithms
 
