@@ -1,4 +1,4 @@
-# Job Ranking System (DSA Project)
+# SkillMesh: Job Ranking System (DSA Project)
 
 A high-performance **Job Ranking & Candidate Matching System** built with **.NET 10.0** and **PostgreSQL**.
 
